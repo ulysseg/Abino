@@ -20,8 +20,7 @@ public class Individu {
 	public Individu() {
 //		nn = new Perceptron(Main.nbCases, 1);
 //		nn.getLayerAt(0).getNeuronAt(0).
-		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 2, 1);
-		System.out.println(nn.getLayerAt(0).getNeuronAt(0).getTransferFunction());
+		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 3, 1);
 		nn.randomizeWeights(-1, 1);
 		this.fitness = this.fitness(false);
 	}
@@ -32,7 +31,7 @@ public class Individu {
 	 */
 	public Individu(Individu i) {
 //		nn = new Perceptron(Main.nbCases, 1);
-		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 2, 1);
+		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 3, 1);
 		nn.setWeights(DoubleTodouble(i.getWeights()));
 		this.fitness = i.fitness;
 	}
@@ -45,19 +44,28 @@ public class Individu {
 	public double fitness(boolean display) {
 		// Tester l'individu sur un certain de matrices pour connaitre son "score"
 		int nbRightGuess = 0;
+		
+		// Prendre en compte le fait d'etre proche de 0 ou de 1
 
 		for(DataSetRow dataRow : Main.input.getRows()) {
 			this.nn.setInput(dataRow.getInput());
 			this.nn.calculate();
 			double[] networkOutput = nn.getOutput(); // Voir ce que ce retourne
-			int test = (int) networkOutput[0];
+//			int test = (int) networkOutput[0];
 			if(display) {
 				System.out.println("networkOutput="+networkOutput[0]);
 			}
 			// Un peu bullshit cette ligne
 //			if(Main.getSideWithOnes(dataRow) == -1) {
 //				nbRightGuess++;
-			if(networkOutput[0] == Main.getSideWithOnes(dataRow)) {
+//			if(networkOutput[0] == Main.getSideWithOnes(dataRow)) {
+//				nbRightGuess++;
+//			}
+			
+			
+			if(networkOutput[0] <= 0.6 &&  Main.getSideWithOnes(dataRow) == 0) {
+				nbRightGuess++;
+			} else if(networkOutput[0] > 0.6 && Main.getSideWithOnes(dataRow) == 1){
 				nbRightGuess++;
 			}
 

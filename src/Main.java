@@ -27,13 +27,13 @@ public class Main {
 
 		input.addRow(new DataSetRow(new double[]{1, 0, 0, 0}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 0, 0, 1}, new double[]{0})); //equal
-//		input.addRow(new DataSetRow(new double[]{1, 0, 1, 0}, new double[]{0})); //equal
+		input.addRow(new DataSetRow(new double[]{1, 0, 1, 0}, new double[]{0})); //equal
 		input.addRow(new DataSetRow(new double[]{1, 0, 1, 1}, new double[]{1}));
 
 		input.addRow(new DataSetRow(new double[]{1, 1, 0, 0}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 0, 1}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 1, 0}, new double[]{0}));
-//		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
+		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
 
 
 		Population p = new Population(1000);
@@ -90,17 +90,18 @@ public class Main {
 			Population popDescendante = p.bordel();
 			p = popDescendante;
 			i++;
-//			if(p.getTheBest().fitness(false) > maxFitness) {
-				maxFitness = p.getTheBest().fitness(true);
+			if(p.getTheBest().fitness(false) > maxFitness) {
+				maxFitness = p.getTheBest().fitness(false);
 				System.out.println(maxFitness);
-				System.out.println(p.getTheBest());
-//			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("nombre de poids="+p.getTheBest().getWeights().length);
+//				System.out.println(p.getTheBest());
 			}
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			//System.out.println(popDescendante);
 		} 
 		System.out.println("i="+i);
