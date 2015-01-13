@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.BeforeClass;
@@ -10,6 +11,9 @@ import org.neuroph.core.data.DataSetRow;
 public class IndividuTest {
 	
 	public static DataSet input = new DataSet(4, 1);
+	
+	static Individu i1, i2;
+
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -32,6 +36,10 @@ public class IndividuTest {
 		input.addRow(new DataSetRow(new double[]{1, 1, 0, 1}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 1, 0}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
+		
+		i1 = new Individu();
+		i2 = new Individu();
+
 	}
 
 //	@Test
@@ -75,6 +83,11 @@ public class IndividuTest {
 
 	@Test
 	public void testCross() {
+		System.out.println(i1);
+		System.out.println(i2);
+		i1.cross(i2);
+		System.out.println(i1);
+		System.out.println(i2);
 		fail("Not yet implemented");
 	}
 

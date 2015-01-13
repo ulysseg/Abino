@@ -12,6 +12,9 @@ public class Main {
 	public static void main(String[] args) {
 
 		// On represente selon les colonnes
+		// 0 si plus de 1 a gauche
+		// 1 si plus de 1 a droite
+		// 0 si equalite
 		input.addRow(new DataSetRow(new double[]{0, 0, 0, 0}, new double[]{0})); //equal
 		input.addRow(new DataSetRow(new double[]{0, 0, 0, 1}, new double[]{1}));
 		input.addRow(new DataSetRow(new double[]{0, 0, 1, 0}, new double[]{1}));
@@ -24,16 +27,16 @@ public class Main {
 
 		input.addRow(new DataSetRow(new double[]{1, 0, 0, 0}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 0, 0, 1}, new double[]{0})); //equal
-		input.addRow(new DataSetRow(new double[]{1, 0, 1, 0}, new double[]{0})); //equal
+//		input.addRow(new DataSetRow(new double[]{1, 0, 1, 0}, new double[]{0})); //equal
 		input.addRow(new DataSetRow(new double[]{1, 0, 1, 1}, new double[]{1}));
 
 		input.addRow(new DataSetRow(new double[]{1, 1, 0, 0}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 0, 1}, new double[]{0}));
 		input.addRow(new DataSetRow(new double[]{1, 1, 1, 0}, new double[]{0}));
-		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
+//		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
 
 
-		Population p = new Population(10);
+		Population p = new Population(1000);
 //		System.out.println(p);
 //
 //		for(Individu i : p.individus) {
@@ -80,15 +83,28 @@ public class Main {
 		//			System.out.println("Actual="+getSideWithOnes(dataRow));
 		//		}
 		
+		
 		int i = 0;
-		while(p.getTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBest().fitness() < 0.80) {
+		double maxFitness = -1;
+		while(p.getTheBest().fitness(false) < 1) {
 			Population popDescendante = p.bordel();
 			p = popDescendante;
 			i++;
+//			if(p.getTheBest().fitness(false) > maxFitness) {
+				maxFitness = p.getTheBest().fitness(true);
+				System.out.println(maxFitness);
+				System.out.println(p.getTheBest());
+//			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			//System.out.println(popDescendante);
-		}
+		} 
 		System.out.println("i="+i);
-		p.getTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBestOfTheBest().fitness();
+		System.out.println("fitness="+p.getTheBest().fitness(false));
 		System.out.println("STOPA");
 	}
 
@@ -113,10 +129,12 @@ public class Main {
 			}
 		}
 
-		if(left >= right) {
+		if(left > right) {
 			return 0;
-		} else {
+		} else if (right > left){
 			return 1;
+		} else { // equal
+			return -1;
 		}
 	}
 

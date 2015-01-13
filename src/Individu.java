@@ -1,48 +1,68 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.Neuron;
 import org.neuroph.core.data.DataSetRow;
+import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.Perceptron;
+import org.neuroph.util.TransferFunctionType;
 
 
 public class Individu {
 	NeuralNetwork nn;
+	double fitness;
 
 	// Chaque individu est un reseau de neurone
 	public Individu() {
-		nn = new Perceptron(Main.nbCases, 1);
-		nn.randomizeWeights();
+//		nn = new Perceptron(Main.nbCases, 1);
+//		nn.getLayerAt(0).getNeuronAt(0).
+		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 2, 1);
+		System.out.println(nn.getLayerAt(0).getNeuronAt(0).getTransferFunction());
+		nn.randomizeWeights(-1, 1);
+		this.fitness = this.fitness(false);
 	}
-	
+
+	/**
+	 * Copy constructor
+	 * @param i
+	 */
 	public Individu(Individu i) {
-		nn = new Perceptron(Main.nbCases, 1);
+//		nn = new Perceptron(Main.nbCases, 1);
+		this.nn = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 4, 2, 1);
 		nn.setWeights(DoubleTodouble(i.getWeights()));
+		this.fitness = i.fitness;
 	}
 
 	/**
 	 * Fitness ou fonction d'évaluation
+	 * remettre systematique le meilleur
 	 * @return
 	 */
-	public double fitness() {
+	public double fitness(boolean display) {
 		// Tester l'individu sur un certain de matrices pour connaitre son "score"
 		int nbRightGuess = 0;
-		
+
 		for(DataSetRow dataRow : Main.input.getRows()) {
 			this.nn.setInput(dataRow.getInput());
 			this.nn.calculate();
 			double[] networkOutput = nn.getOutput(); // Voir ce que ce retourne
 			int test = (int) networkOutput[0];
-			System.out.println("networkOutput="+networkOutput[0]);
+			if(display) {
+				System.out.println("networkOutput="+networkOutput[0]);
+			}
 			// Un peu bullshit cette ligne
-//			if(networkOutput[0] == Main.getSideWithOnes(dataRow)) {
-			if(test == Main.getSideWithOnes(dataRow)) {
+//			if(Main.getSideWithOnes(dataRow) == -1) {
+//				nbRightGuess++;
+			if(networkOutput[0] == Main.getSideWithOnes(dataRow)) {
 				nbRightGuess++;
 			}
-		}
 
+			
+		}
 		return ((double) nbRightGuess)/Main.input.size();
 	}
 
@@ -60,43 +80,58 @@ public class Individu {
 			this.nn.getWeights()[i] = weights[i];
 		}
 	}
-	
+
 	public void setWeightAtIndex(double value, int index) {
-//		this.nn.getWeights()[index] = value;
+		//		this.nn.getWeights()[index] = value;
 		double[] weights = DoubleTodouble(this.nn.getWeights());
 		weights[index] = value;
 		this.nn.setWeights(weights);
 	}
-	
+
 	/**
 	 * TODO
 	 */
-	public void mutate() {
+	public void mutate(double probability) {
 		Random rand = new Random();
-		int neuronIndex = rand.nextInt(Main.nbCases-1);
-//		System.out.println("neuronIndex="+neuronIndex);
-		double value = rand.nextDouble();
-		this.setWeightAtIndex(value, neuronIndex);
 
+		for (int i = 0; i < this.getWeights().length; i++) {
+			if(rand.nextDouble() <= probability) {
+//				double randNeuronValue = rand.nextDouble();
+				double randNeuronValue = -1 + 2*rand.nextDouble();
+				this.setWeightAtIndex(randNeuronValue, i);
+			}
+		}
 	}
-	
+
 	/*
-	 * cross switch les deux neurones entre les deux individus
+	 * croisement en un point (tjs du point du croisement jusqu'a la fin)
 	 * modifie this et i
 	 */
 	public void cross(Individu i) {
-//		Individu child = new Individu();
+		//		Individu child = new Individu();
 		Random rand = new Random();
-		int neuronIndex = rand.nextInt(Main.nbCases-1);
-		double valueTmp = this.getWeights()[neuronIndex]; 
-		
-		// Pour celui de "gauche"
-		this.setWeightAtIndex(i.getWeights()[neuronIndex], neuronIndex);
-		// Celui en parametre
-		i.setWeightAtIndex(valueTmp, neuronIndex);
+		// Point de croisement
+		int crossPoint = rand.nextInt(this.getWeights().length);
+
+		// Sauvegarde des coefficients de this du point de 
+		// croisement jusqu'a la fin
+		double[] valueTmp = new double[this.getWeights().length - crossPoint];
+		for(int j = crossPoint, k = 0; j < this.getWeights().length; j++, k++) {
+			valueTmp[k] = this.getWeights()[j];
+		}
+
+		// Copie de parametre vers this
+		for(int j = crossPoint; j < this.getWeights().length; j++) {
+			this.setWeightAtIndex(i.getWeights()[j], j);
+		}
+
+		// Copie de this vers parametre a l'aide valueTmp
+		for(int j = crossPoint, k = 0; j < this.getWeights().length; j++, k++) {
+			i.setWeightAtIndex(valueTmp[k], j);
+		}
 	}
 
-	
+
 
 	@Override
 	public String toString() {
@@ -113,7 +148,7 @@ public class Individu {
 
 		return s;
 	}
-	
+
 	/**
 	 * A tester
 	 * @param in
@@ -123,8 +158,8 @@ public class Individu {
 		double[] tempArray = new double[in.length];
 		int i = 0;
 		for(Double d : in) {
-		  tempArray[i] = (double) d;
-		  i++;
+			tempArray[i] = (double) d;
+			i++;
 		}
 		return tempArray;
 	}
