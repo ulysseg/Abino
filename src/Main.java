@@ -2,6 +2,7 @@ import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 
 //bitbucket.org/louisbob/amino
+//http://stackoverflow.com/questions/1538235/what-are-good-examples-of-genetic-algorithms-genetic-programming-solutions
 //algos4.cs.princeton.edu/61event
 public class Main {
 
@@ -36,7 +37,7 @@ public class Main {
 		input.addRow(new DataSetRow(new double[]{1, 1, 1, 1}, new double[]{0})); //equal
 
 
-		Population p = new Population(1000);
+		Population p = new Population(100);
 //		System.out.println(p);
 //
 //		for(Individu i : p.individus) {
@@ -86,16 +87,21 @@ public class Main {
 		
 		int i = 0;
 		double maxFitness = -1;
-		while(p.getTheBest().fitness(false) < 1) {
+		System.out.println(p.getTheBest().fitness);
+		System.out.println(p.getTheBest());
+		while(p.getTheBest().fitness() < 1) {
+		//for(int j = 0; j<1000; j++) {
 			Population popDescendante = p.bordel();
 			p = popDescendante;
 			i++;
-			if(p.getTheBest().fitness(false) > maxFitness) {
-				maxFitness = p.getTheBest().fitness(false);
+			if(p.getTheBest().fitness() > maxFitness) {
+				maxFitness = p.getTheBest().fitness();
 				System.out.println(maxFitness);
-				System.out.println("nombre de poids="+p.getTheBest().getWeights().length);
-//				System.out.println(p.getTheBest());
+				System.out.println(p.getTheBest());
 			}
+//				System.out.println("nombre de poids="+p.getTheBest().getWeights().length);
+////				System.out.println(p.getTheBest());
+//			}
 //			try {
 //				Thread.sleep(1000);
 //			} catch (InterruptedException e) {
@@ -104,15 +110,16 @@ public class Main {
 //			}
 			//System.out.println(popDescendante);
 		} 
-		System.out.println("i="+i);
-		System.out.println("fitness="+p.getTheBest().fitness(false));
-		System.out.println("STOPA");
+//		System.out.println("i="+i);
+//		System.out.println("fitness="+p.getTheBest().fitness());
+//		System.out.println("STOPA");
 	}
 
 
 	/**
 	 * retourne 0 si y a plus de 1 a gauche
 	 * retourne 1 si y a plus de 1 a droite
+	 * retourne 0 si il y a egalite
 	 * @param r
 	 * @return
 	 */
@@ -135,7 +142,7 @@ public class Main {
 		} else if (right > left){
 			return 1;
 		} else { // equal
-			return -1;
+			return 0;
 		}
 	}
 

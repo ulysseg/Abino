@@ -87,7 +87,7 @@ public class Population {
 	public Individu getTheBest() {
 		Individu theBest = null;
 		for (Individu i : this.individus) {
-			if(theBest == null || theBest.fitness(false) < i.fitness(false)) {
+			if(theBest == null || theBest.fitness() < i.fitness()) {
 				theBest = i;
 			}
 		}
@@ -109,8 +109,8 @@ public class Population {
 		}
 
 		//double fitness1 =
-		double fitness1 = this.individus.get(index1).fitness(false);
-		double fitness2 = this.individus.get(index2).fitness(false);
+		double fitness1 = this.individus.get(index1).fitness();
+		double fitness2 = this.individus.get(index2).fitness();
 
 		// Determine le meilleur du moins bon
 		Individu better, worse;
